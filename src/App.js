@@ -10,6 +10,9 @@ import SearchResults from './components/SearchResults';
 import { Route, Routes } from 'react-router-dom';
 import Login from './components/Login';
 import SearchedHouse from './components/SearchedHouse';
+import axios from 'axios';
+import Enquiry from './components/Enquiry';
+import EnquiriesList from './components/EnquiriesList';
 
 
 function App() {
@@ -18,15 +21,15 @@ function App() {
  let [housesArray,setHousesArray] =  useState([]);
 
 
-  useEffect( () =>{
-    let fetchData = async () => {
-      let response  = await fetch("/houses.json");
-      let housesData = await response.json();
-      // console.log(housesData);
-      setHousesArray(housesData)
-    }
-    fetchData();
-  },[]);
+useEffect( () =>{
+      let fetchData = async () => {
+let response  = await axios.get(process.env.REACT_APP_BACKEND_URL+"house");
+        let housesData = await response.data  ;
+        // console.log(housesData);
+        setHousesArray(housesData)
+      }
+      fetchData();
+    },[]);
 
 
   return (
@@ -39,21 +42,9 @@ function App() {
           <Route path="/login" element={<Login/>} />
           <Route path="/signup" element={<SignUp/>} />
           <Route path="/searchedhouse" element={<SearchedHouse housesData = {housesArray}/>} />
-         
+          <Route path="/enqiry" element={<Enquiry/>} />
+          <Route path="/enqirylist" element={<EnquiriesList/>} />
         </Routes>
-       
-
-
-
-
-     
-        {/* <House houseInfo = {housesArray[2]} /> */}
-        {/* <SignUp/> */}
-   
-
-
-
-
         <Footer/>
     </div>
   );

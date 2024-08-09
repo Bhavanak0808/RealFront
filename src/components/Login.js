@@ -1,37 +1,66 @@
 import { useState } from "react";
-
-
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const  Login= () => {
+    let navigate = useNavigate();
 
 
-    let [frmEmail,setFrmEmail] = useState("");
-    let [frmPswd,setFrmPswd] = useState("");
+    let [email,setEmail] = useState("");
+    let [password,setPassword] = useState("");
    
     let onEmailChangeHandler =  (e) => { //synthetic event
-        setFrmEmail(e.target.value);
-        // console.log(frmEmail);
+        setEmail(e.target.value);
+        // console.log(email);
     }
 
 
     let onPswdChangeHandler =  (e) => { //synthetic event
-        setFrmPswd(e.target.value);
-        // console.log(frmPswd);
+        setPassword(e.target.value);
+        // console.log(password);
     }
 
 
     let clickHandler = (e) =>{
         e.preventDefault();
-        let frmObj = {frmEmail,frmPswd}
+        let frmObj = {email,password}
         console.log(frmObj);
-        //send the details to middleware/express and check to see if user with this info..
-        // .....exists
-        //if user with this email&pswd exists - take user to home page.
-        // the login button should dissappear and logout button should appear
+        const handleLogin=async()=>{
+            try{
+                const response=await axios.post(process.env.REACT_APP_BACKEND_URL+"user/login/",frmObj)
+                let data=response.data;
+                console.log(data);
+                if(data.email){
+                    localStorage.setItem('name',data.name);
+                    localStorage.setItem('email',data.email);
+                    localStorage.setItem('loginStatus',true)
+			   if(data.role==="customer")
+                        navigate('/');
+                    else if(data.role==="realtor")
+                        navigate('/enqirylist');
+
+
+                }
+                else{
+                    localStorage.clear();
+                    localStorage.setItem('loginStatus',false)
+                }
+            }catch(err){
+                console.error("Login Failed:", err)
+                localStorage.clear();
+                localStorage.setItem('loginStatus',false)
+            }
+        };
+        handleLogin();
+
+
     }
+
+
 
 
     return (
         <>
+       
        <div className="row d-flex justify-content-center">
             <div className="col-sm-3">
                 <div className="mb-3">
@@ -48,6 +77,8 @@ const  Login= () => {
                 </div>
             </div>
         </div>
+
+
 
 
         <div className="row d-flex justify-content-center">
@@ -68,6 +99,8 @@ const  Login= () => {
         </div>
 
 
+
+
         <div className="row d-flex justify-content-center">
             <div className="col-sm-3">
                     <div className="mb-3">
@@ -75,6 +108,7 @@ const  Login= () => {
                     </div>
             </div>
         </div>
+       
         </>
        
       );
